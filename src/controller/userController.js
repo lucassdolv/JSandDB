@@ -24,9 +24,28 @@ const UserController = {
 
             console.log("Atualizando objeto!");
             console.log({ id });
-            console.log({ nome, idade, senha, email });
-            return res.status(200).json({
-                msg: 'Usuario atualizado com sucesso!'
+            console.log({ nome, senha, email });
+
+            const userUpdate = await User.findByPk(id);
+
+            if (userUpdate == null) {
+                return res.status(404).json({
+                    msg: "usuario nao encontrado"
+                })
+            }
+
+            const updated = await userUpdate.update({
+                nome, senha, email
+            })
+
+            if(updated) {
+                return res.status(200).json({
+                    msg:"Usuario atualizado com sucesso!"
+                })
+            }
+
+            return res.status(500).json({
+                msg: 'Erro ao utilizar!'
             });
 
         } catch (error) {
@@ -67,6 +86,15 @@ const UserController = {
     },
     delete: async (req, res) => {
         try {
+            const { id } = req.params;
+            const userFinded = await User.findByPk(id);
+
+            if(userFinded == null) {
+                return res.status(404).json({
+                    msg: "user não encontrado"
+                })
+            }
+            userFinded.destroy()
             return res.status(200).json({
                 msg: 'Usuario deletado com sucesso!'
             })
@@ -77,4 +105,4 @@ const UserController = {
     }
 }
 
-module.exports = UserController
+module.exports = UserController;
